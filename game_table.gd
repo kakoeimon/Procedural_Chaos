@@ -9,6 +9,7 @@ var controls
 
 func _ready():
 	get_tree().set_auto_accept_quit(false)
+	_demo()
 	if OS.has_touchscreen_ui_hint():
 		controls = preload("controls/touch_controls.scn").instance()
 	else:
@@ -29,22 +30,27 @@ func _clear_stage():
 			
 func _player_died():
 	deaths +=1
-	_clear_stage()
-	call_deferred("_player_stage_vars")
-	stage.call_deferred("_start_stage", stage.number)
+	#_clear_stage()
+	#call_deferred("_player_stage_vars")
+	#dddastage.call_deferred("_start_stage", stage.number)
 	get_node("deaths/Number").set_text(str(deaths))
-	
+	player.set_fixed_process(false)
+	player.health = 10000
+	player.set_material(get_node("Stage/Enemies").get_material())
+	player.set_use_parent_material(false)
+	player.get_node("Particles2D").set_emitting(true)
+	player.get_node("Particles2D").set_use_parent_material(true)
+	player.set_bounce(0.5)
+	player.disconnect("body_exit", player, "_body_exit")
+	get_node("Change_Stage_Timer").start()
 	
 		
 func _enemy_died():
 	if get_node("Stage/Enemies").get_child_count() <= 2:
-		_clear_stage()
-		call_deferred("_player_stage_vars")
-		stage.call_deferred("_next_stage")
-		get_node("Stage_Number/Number").set_text(str(stage.number + 1))
-	#timer.set_wait_time(timer.get_wait_time() + 1)
-	#timer.stop()
-	#timer.start()
+		stage.number +=1
+		get_node("Change_Stage_Timer").start()
+		for i in get_node("Stage/Players").get_children():
+			i.set_gravity_scale(5)
 	pass
 	
 func _player_stage_vars():
@@ -71,19 +77,22 @@ func _on_Timer_timeout():
 
 func _start_stage(number):
 	get_node("Stage_Selector").hide()
-	_player_stage_vars()
+	call_deferred("_player_stage_vars")
 	stage._start_stage(number)
 	#timer.set_wait_time(timer.get_wait_time() + stage.number)
 	get_node("Stage_Number/Number").set_text(str(stage.number))
 	get_node("deaths/Number").set_text(str(deaths))
-	controls.show()
+
 
 func _on_Start_Button_pressed():
 	get_node("Menu").hide()
 	#get_node("Stage_Selector").show()
 	deaths = 0
-	_start_stage(1)
-	
+	stage.number = 1
+	for i in get_tree().get_nodes_in_group("eggs"):
+		i.set_gravity_scale(5)
+	get_node("Change_Stage_Timer").start()
+	controls.show()
 	pass # replace with function body
 	
 func _notification(what):
@@ -112,9 +121,24 @@ func _on_Exit_Menu_pressed():
 	get_node("Pause_Menu").hide()
 	_clear_stage()
 	get_node("Menu").show()
+	get_node("Change_Stage_Timer").stop()
+	_demo()
+	
 	pass # replace with function body
 
 
 func _on_Exit_Button_pressed():
 	get_tree().quit()
+	pass # replace with function body
+
+func _demo():
+	stage._start_stage(int(rand_range(15,30)))
+	for i in get_tree().get_nodes_in_group("eggs"):
+		i.set_linear_velocity(Vector2(rand_range(0,5), rand_range(0,5)))
+		i.set_bounce(0.5)
+		i.set_linear_damp(0)
+
+func _on_Change_Stage_Timer_timeout():
+	_clear_stage()
+	call_deferred("_start_stage",stage.number)
 	pass # replace with function body

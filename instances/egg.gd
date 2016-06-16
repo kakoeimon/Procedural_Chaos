@@ -15,7 +15,7 @@ func _ready():
 	add_to_group("enemies")
 	add_to_group("eggs")
 	pass
-
+	
 func damage(value):
 	anim.play("damage")
 	health -= value
