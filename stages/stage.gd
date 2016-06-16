@@ -6,7 +6,7 @@ extends Node2D
 # var b="textvar"
 onready var game_table = get_parent()
 const type = "stage"
-var number = 0
+var number = 1
 var starting_eggs = 0
 var stage_modulate = Color(1.0, 0.0, 0.0)
 var modulate = Color(0.0, 0.0, 0.0)

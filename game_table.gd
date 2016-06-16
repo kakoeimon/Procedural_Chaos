@@ -4,20 +4,17 @@ onready var stage = get_node("Stage")
 onready var timer = get_node("Timer")
 var deaths = 0
 var player
+var controls
 
 
 func _ready():
-	stage.number = 5
-	
-	_player_stage_vars()
-	stage._start_stage(stage.number)
-	#timer.set_wait_time(timer.get_wait_time() + stage.number)
-	get_node("Stage_Number/Number").set_text(str(stage.number))
+	get_tree().set_auto_accept_quit(false)
 	if OS.has_touchscreen_ui_hint():
-		add_child(preload("controls/touch_controls.scn").instance())
+		controls = preload("controls/touch_controls.scn").instance()
 	else:
-		add_child(preload("controls/mouse_controls.scn").instance())
-	
+		controls = preload("controls/mouse_controls.scn").instance()
+	controls.hide()
+	add_child(controls)
 	set_process(true)
 	
 func _process(delta):
@@ -44,7 +41,7 @@ func _enemy_died():
 		_clear_stage()
 		call_deferred("_player_stage_vars")
 		stage.call_deferred("_next_stage")
-		get_node("Stage_Number/Number").set_text("Stage " + str(stage.number + 1))
+		get_node("Stage_Number/Number").set_text(str(stage.number + 1))
 	#timer.set_wait_time(timer.get_wait_time() + 1)
 	#timer.stop()
 	#timer.start()
@@ -70,4 +67,54 @@ func _player_stage_vars():
 func _on_Timer_timeout():
 	var eggs = get_tree().get_nodes_in_group("eggs")
 	eggs[rand_range(0,eggs.size()-1)].damage(5)
+	pass # replace with function body
+
+func _start_stage(number):
+	get_node("Stage_Selector").hide()
+	_player_stage_vars()
+	stage._start_stage(number)
+	#timer.set_wait_time(timer.get_wait_time() + stage.number)
+	get_node("Stage_Number/Number").set_text(str(stage.number))
+	get_node("deaths/Number").set_text(str(deaths))
+	controls.show()
+
+func _on_Start_Button_pressed():
+	get_node("Menu").hide()
+	#get_node("Stage_Selector").show()
+	deaths = 0
+	_start_stage(1)
+	
+	pass # replace with function body
+	
+func _notification(what):
+	if (what == MainLoop.NOTIFICATION_WM_QUIT_REQUEST):
+		if not get_node("Menu").is_hidden():
+			get_tree().quit()
+		else:
+			if get_node("Pause_Menu").is_hidden():
+				get_node("Pause_Menu").show()
+				controls.hide()
+				get_tree().set_pause(true)
+			else:
+				get_node("Pause_Menu").hide()
+				controls.show()
+				get_tree().set_pause(false)
+
+func _on_Resume_Button_pressed():
+	get_node("Pause_Menu").hide()
+	controls.show()
+	get_tree().set_pause(false)
+	pass # replace with function body
+
+
+func _on_Exit_Menu_pressed():
+	get_tree().set_pause(false)
+	get_node("Pause_Menu").hide()
+	_clear_stage()
+	get_node("Menu").show()
+	pass # replace with function body
+
+
+func _on_Exit_Button_pressed():
+	get_tree().quit()
 	pass # replace with function body
