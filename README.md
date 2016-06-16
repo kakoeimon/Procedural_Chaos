@@ -11,13 +11,16 @@ If two Spores collides then they become an Egg.
 If the you shoot an Egg of yours then those Eggs shoot too.
 Berserkers shoot at you when they are created and when they collide with the edges of the stage. They die if they collide with your Eggs and they break your Egg. They are trying to accelerate towards you.
 Copters destroy Eggs. They break their Eggs and yours without dieing. They keep a direction and speed and bounce.
-
+If you touch the edges you are starting to convert to an enemy. You must move out of the edges before one second passes.
 
 CONTROLS
 WASD and ARROW KEYS for movement
 Mouse to point and shoot.
 
-Touch Joystick for Android
+Touch Joystick for Android (by kubecz3k http://godotengine.org/qa/user/kubecz3k)
 
 TODO : Add Joystick support. 
+	Create Menu Screen
+	More graphics, death animations and change stage animations.
+	Maybe some more enemies...
 # Procedural_Chaos

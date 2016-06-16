@@ -12,7 +12,7 @@ func _ready():
 	_player_stage_vars()
 	stage._start_stage(stage.number)
 	#timer.set_wait_time(timer.get_wait_time() + stage.number)
-	get_node("Stage_Number/Number").set_text("Stage " + str(stage.number))
+	get_node("Stage_Number/Number").set_text(str(stage.number))
 	if OS.has_touchscreen_ui_hint():
 		add_child(preload("controls/touch_controls.scn").instance())
 	else:
