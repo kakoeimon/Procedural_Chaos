@@ -43,6 +43,10 @@ func _start_stage(num):
 	next_modulate = random_color
 	_add_random_eggs(num, num*3)
 	_set_color(stage_modulate)
+	for i in get_tree().get_nodes_in_group("eggs"):
+		i.set_linear_velocity(Vector2(rand_range(0,5), rand_range(0,5)))
+		i.set_bounce(0.5)
+		i.set_linear_damp(0)
 	
 	
 func _add_random_eggs(islands = 1, population = 10):
@@ -98,3 +102,10 @@ func _set_color(color):
 	get_node("Enemies").get_material().set_shader_param("modulate",color)
 	get_node("Players").get_material().set_shader_param("modulate",color.inverted())
 	pass
+
+
+func _on_Timer_Stop_Editing_timeout():
+	for egg in get_tree().get_nodes_in_group("eggs"):
+		egg.set_bounce(0.1)
+		egg.set_linear_damp(-1)
+	pass # replace with function body

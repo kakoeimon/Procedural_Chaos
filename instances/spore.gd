@@ -44,6 +44,7 @@ func infant():
 func damage(value):
 	health -=value
 	if health <=0:
-		queue_free()
 		emit_signal("enemy_died")
+		queue_free()
+		
 		

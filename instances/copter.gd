@@ -7,8 +7,7 @@ extends RigidBody2D
 signal enemy_died
 var type = "copter"
 var speed = 300
-var angular = 200
-var health = 1
+var health = 2
 var power = 2
 
 
@@ -35,14 +34,11 @@ func damage(value):
 	if health <= 0:
 		spore()
 		
-func egg():
-	var egg = load("res://instances/egg.scn").instance()
-	egg.set_pos(get_pos())
-	get_parent().add_child(egg)
+
+func _on_Timer_timeout():
+	for i in range(0,2):
+		var egg = preload("res://instances/spore.scn").instance()
+		egg.set_pos(get_pos())
+		get_parent().add_child(egg)
 	queue_free()
-	
-func spore():
-	var egg = preload("res://instances/spore.scn").instance()
-	egg.set_pos(get_pos())
-	get_parent().add_child(egg)
-	queue_free()
+	pass # replace with function body

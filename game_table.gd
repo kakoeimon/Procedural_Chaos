@@ -30,27 +30,42 @@ func _clear_stage():
 			
 func _player_died():
 	deaths +=1
-	#_clear_stage()
-	#call_deferred("_player_stage_vars")
-	#dddastage.call_deferred("_start_stage", stage.number)
 	get_node("deaths/Number").set_text(str(deaths))
 	player.set_fixed_process(false)
-	player.health = 10000
+	player.type = "none"
+	player.health = 1000
 	player.set_material(get_node("Stage/Enemies").get_material())
 	player.set_use_parent_material(false)
-	player.get_node("Particles2D").set_emitting(true)
+	player.anim.play("Dead")
 	player.get_node("Particles2D").set_use_parent_material(true)
+	player.set_gravity_scale(5)
 	player.set_bounce(0.5)
 	player.disconnect("body_exit", player, "_body_exit")
+	player.disconnect("body_enter", player, "_body_enter")
+	
+	
 	get_node("Change_Stage_Timer").start()
 	
 		
 func _enemy_died():
-	if get_node("Stage/Enemies").get_child_count() <= 2:
+	print(get_node("Stage/Enemies").get_child_count())
+	if get_node("Stage/Enemies").get_child_count() <= 2: #No ENEMIES
 		stage.number +=1
 		get_node("Change_Stage_Timer").start()
+		player.remove_shape(0)
+		player.disconnect("body_enter", player, "_body_enter")
+		player.disconnect("body_exit", player, "_body_exit")
+		var particles = player.get_node("Particles2D")
+		particles.set_use_parent_material(true)
+		player.anim.play("Win")
+		
 		for i in get_node("Stage/Players").get_children():
-			i.set_gravity_scale(5)
+			if i.get_instance_ID() != player.get_instance_ID() and not i.is_type("Polygon2D"):
+				i.set_gravity_scale(5)
+				i.set_bounce(0.5)
+		var edges = get_node("Stage/Enemies/Polygon2D")
+		get_node("Stage/Enemies").remove_child(edges)
+		get_node("Stage/Players").add_child(edges)
 	pass
 	
 func _player_stage_vars():
@@ -133,10 +148,7 @@ func _on_Exit_Button_pressed():
 
 func _demo():
 	stage._start_stage(int(rand_range(15,30)))
-	for i in get_tree().get_nodes_in_group("eggs"):
-		i.set_linear_velocity(Vector2(rand_range(0,5), rand_range(0,5)))
-		i.set_bounce(0.5)
-		i.set_linear_damp(0)
+	
 
 func _on_Change_Stage_Timer_timeout():
 	_clear_stage()

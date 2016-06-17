@@ -33,7 +33,7 @@ func _ready():
 	add_to_group("players")
 	connect("body_enter", self , "_body_enter")
 	connect("body_exit", self , "_body_exit")
-		
+	anim.play("Idle")
 	set_fixed_process(true)
 	pass
 	
@@ -100,17 +100,12 @@ func _reset_fire_rate():
 
 func _body_enter(body):
 	if body.type == "stage":
-		var timer = get_node("Burner_Timer").start()
 		var material = get_node("../../Enemies").get_material()
-		var particles = get_node("Particles2D")
-		particles.set_material(material)
-		particles.set_emitting(true)
+		get_node("Particles2D").set_material(material)
+		get_node("Particles2D").set_use_parent_material(false)
+		anim.play("Burning")
 		
 func _body_exit(body):
 	if body.type == "stage":
-		var timer = get_node("Burner_Timer").stop()
-		get_node("Particles2D").set_emitting(false)
+		anim.play("Idle")
 
-func _on_Burner_Timer_timeout():
-	damage(1)
-	pass # replace with function body

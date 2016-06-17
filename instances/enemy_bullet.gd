@@ -21,3 +21,7 @@ func _body_enter(body):
 		queue_free()
 	elif body.type == "bonus_base":
 		queue_free()
+		
+
+	
+	
