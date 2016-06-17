@@ -10,13 +10,16 @@ var controls
 func _ready():
 	get_tree().set_auto_accept_quit(false)
 	_demo()
-	if OS.has_touchscreen_ui_hint():
-		controls = preload("controls/touch_controls.scn").instance()
+	if OS.has_method("has_touchscreen_ui_hint"):
+		if OS.has_touchscreen_ui_hint():
+			controls = preload("controls/touch_controls.scn").instance()
+		else:
+			controls = preload("controls/mouse_controls.scn").instance()
 	else:
 		controls = preload("controls/mouse_controls.scn").instance()
 	controls.hide()
 	add_child(controls)
-	set_process(true)
+	#set_process(true)
 	
 func _process(delta):
 	get_node("fps/Label").set_text(str(OS.get_frames_per_second()))

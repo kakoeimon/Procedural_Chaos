@@ -32,13 +32,16 @@ func _body_exit(body):
 func damage(value):
 	health -= value
 	if health <= 0:
-		spore()
+		dead()
 		
 
 func _on_Timer_timeout():
+	dead()
+	pass # replace with function body
+
+func dead():
 	for i in range(0,2):
 		var egg = preload("res://instances/spore.scn").instance()
 		egg.set_pos(get_pos())
 		get_parent().add_child(egg)
 	queue_free()
-	pass # replace with function body
