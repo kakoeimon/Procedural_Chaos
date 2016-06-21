@@ -4,7 +4,7 @@ extends RigidBody2D
 # member variables here, example:
 # var a=2
 # var b="textvar"
-signal enemy_died
+onready var stage = get_node("../../.")
 var type = "spore"
 var health = 1
 var power = 1
@@ -14,9 +14,9 @@ func _ready():
 	# Called every time the node is added to the scene.
 	# Initialization here
 	connect("body_enter",self, "_body_enter")
-	connect("enemy_died", get_tree().get_current_scene(), "_enemy_died")
 	var vel = Vector2(1,0).rotated(rand_range(-PI, PI)) * speed
 	set_linear_velocity(vel)
+	stage.get_node("Enemy_SamplePlayer").play("spore")
 	pass
 func _body_enter(body):
 	if grown:
@@ -44,7 +44,6 @@ func infant():
 func damage(value):
 	health -=value
 	if health <=0:
-		emit_signal("enemy_died")
 		queue_free()
 		
 		

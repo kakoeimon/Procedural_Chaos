@@ -4,6 +4,7 @@ extends RigidBody2D
 # member variables here, example:
 # var a=2
 # var b="textvar"
+onready var stage = get_node("../../.")
 onready var anim = get_node("AnimationPlayer")
 var type = "egg"
 var health = 3
@@ -14,6 +15,7 @@ func _ready():
 	anim.seek(rand_range(0.0,1.0))
 	add_to_group("enemies")
 	add_to_group("eggs")
+	stage.get_node("Enemy_SamplePlayer").play("eggs")
 	pass
 	
 func damage(value):
@@ -24,6 +26,7 @@ func damage(value):
 			var egg = preload("res://instances/infant.scn").instance()
 			egg.set_pos(get_pos())
 			get_parent().add_child(egg)
+		stage.get_node("Enemy_SamplePlayer").play("egg_break")
 		queue_free()
 		
 

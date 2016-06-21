@@ -5,6 +5,7 @@ extends RigidBody2D
 # var a=2
 # var b="textvar"
 signal enemy_died
+onready var stage = get_node("../../.")
 var type = "copter"
 var speed = 300
 var health = 2
@@ -16,6 +17,7 @@ func _ready():
 	# Initialization here
 	connect("body_exit",self, "_body_exit")
 	add_to_group("enemies")
+	stage.get_node("Enemy_SamplePlayer").play("copter")
 	set_linear_velocity(get_linear_velocity().normalized() * speed)
 	pass
 

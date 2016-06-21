@@ -7,6 +7,7 @@ extends RigidBody2D
 signal player_died
 signal health_changed
 onready var anim = get_node("AnimationPlayer")
+onready var stage = get_node("../../.")
 var type = "player"
 var acc = 2000
 var max_vel = 200
@@ -67,6 +68,7 @@ func _fixed_process(delta):
 	fire_rate_timer -=1
 	if fire or auto_fire:
 		if fire_rate_timer <=0:
+			#get_node("SamplePlayer2D").play("Laser_Shoot")
 			fire_rate_timer = fire_rate
 			var b = preload("bullet.scn").instance()
 			b.add_collision_exception_with(self)
@@ -83,8 +85,7 @@ func damage(value = 1):
 	health -= value
 	emit_signal("health_changed",health)
 	if health <= 0:
-			
-			emit_signal("player_died")
+		emit_signal("player_died")
 			
 
 func _advance_fire_rate(value = 0.1):
@@ -108,4 +109,27 @@ func _body_enter(body):
 func _body_exit(body):
 	if body.type == "stage":
 		anim.play("Idle")
+		
+func _touching():
+	stage.get_node("Player_SamplePlayer").play("touch_edges")
 
+func win():
+	set_contact_monitor(false)
+	remove_shape(0)
+	get_node("Particles2D").set_use_parent_material(true)
+	anim.play("Win")
+	stage.get_node("Player_SamplePlayer").play("Win")
+	
+func dead():
+	set_fixed_process(false)
+	type = "none"
+	health = 1000
+	stage.get_node("Player_SamplePlayer").play("dead")
+	
+	set_use_parent_material(false)
+	anim.play("Dead")
+	get_node("Particles2D").set_use_parent_material(true)
+	set_gravity_scale(5)
+	set_bounce(0.5)
+	disconnect("body_exit", self, "_body_exit")
+	disconnect("body_enter", self, "_body_enter")

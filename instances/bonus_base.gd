@@ -4,6 +4,7 @@ extends RigidBody2D
 # member variables here, example:
 # var a=2
 # var b="textvar"
+onready var stage = get_node("../../.")
 var speed = 100
 var type = "bonus_base"
 var power = 3
@@ -13,6 +14,7 @@ func _ready():
 	# Called every time the node is added to the scene.
 	# Initialization here
 	connect("body_enter", self, "_body_enter")
+	stage.get_node("Enemy_SamplePlayer").play("eggs")
 	pass
 
 func _body_enter(body):
@@ -23,6 +25,7 @@ func _body_enter(body):
 		queue_free()
 	elif body.type == "infant" or body.type == "berserker":
 		body.damage(power)
+		stage.get_node("Enemy_SamplePlayer").play("Hit")
 		queue_free()
 
 func _shoot():

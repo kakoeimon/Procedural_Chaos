@@ -4,6 +4,7 @@ extends RigidBody2D
 # member variables here, example:
 # var a=2
 # var b="textvar"
+onready var stage = get_node("../../.")
 var type = "infant"
 var health = 1
 var speed = 200
@@ -30,6 +31,7 @@ func damage(value):
 func _enter_body(body):
 	if body.type == "player":
 		body.damage(power)
+		stage.get_node("Enemy_SamplePlayer").play("Hit")
 	elif grown: 
 		if body.type == "spore":
 			berserker()

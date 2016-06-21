@@ -4,9 +4,11 @@ extends Node2D
 # member variables here, example:
 # var a=2
 # var b="textvar"
+signal no_enemies
 onready var game_table = get_parent()
 const type = "stage"
 var number = 1
+var deaths = 0
 var starting_eggs = 0
 var stage_modulate = Color(1.0, 0.0, 0.0)
 var modulate = Color(0.0, 0.0, 0.0)
@@ -24,10 +26,34 @@ func _process(delta):
 	if eggs.size():
 		modulate = modulate.linear_interpolate(color, 0.05)
 		_set_color(modulate)
+		
+	if get_node("Enemies").get_child_count() <= 2:
+		_no_enemies()
+		set_process(false)
 	
 func damage(value):
 	pass
-
+	
+func _clear_stage():
+	for i in get_node("Enemies").get_children():
+		if not i.is_type("Label"):
+			i.queue_free()
+	for i in get_node("Players").get_children():
+		if not i.is_type("Label"):
+			i.queue_free()
+	
+func _no_enemies():
+	var player = get_node("Players/player")
+	number +=1
+	get_node("Timer_Change_Stage").start()
+	for i in get_node("Players").get_children():
+		if i.get_instance_ID() != player.get_instance_ID() and not i.is_type("Polygon2D") and not i.is_type("Label"):
+			i.set_gravity_scale(5)
+			i.set_bounce(0.5)
+	player.win()
+	var edges = preload("res://stages/edges.scn").instance()
+	get_node("Players").add_child(edges)
+	pass
 func _next_stage():
 	number +=1
 	_start_stage(number)
@@ -38,6 +64,7 @@ func _start_stage(num):
 	var random_color = _random_color()
 	var edges = preload("edges.scn").instance()
 	get_node("Enemies").add_child(edges)
+	get_node("Timer_Stop_Editing").start()
 	#while stage_modulate.r == random_color.r or stage_modulate.g == random_color.g or stage_modulate.b == random_color.b:
 	#	random_color = _random_color()
 	next_modulate = random_color
@@ -109,3 +136,44 @@ func _on_Timer_Stop_Editing_timeout():
 		egg.set_bounce(0.1)
 		egg.set_linear_damp(-1)
 	pass # replace with function body
+
+
+func _on_Timer_Change_Stage_timeout():
+	set_process(true)
+	_clear_stage()
+	call_deferred("_start_stage", number)
+	call_deferred("_player_stage_vars")
+	get_node("Players/Label").set_text(str(number))
+	pass # replace with function body
+
+func _player_stage_vars():
+	if not has_node("Players/player"):
+		
+		var player = preload("res://instances/player.scn").instance()
+		player.set_pos(Vector2(320, 240))
+		get_node("Players").add_child(player)
+		player.set_name("player")
+		
+		player.connect("player_died",self, "_player_died")
+		call_deferred("_player_stage_vars")
+		return
+	else:
+		var player = get_node("Players/player")
+		player._reset_fire_rate()
+		player._advance_fire_rate(0.1 * number)
+		#player.max_vel = 200 + 5*number
+		#player.acc = 2000 + 100*number
+		player.bullet_speed = 400 + 5*number
+		
+func _player_died():
+	deaths +=1
+	var player = get_node("Players/player")
+	get_node("Enemies/Label").set_text(str(deaths))
+	player.dead()
+	player.set_material(get_node("Enemies").get_material())
+	if deaths > number and get_parent().game_type == "arcade":
+		var g = preload("res://stages/game_over.scn").instance()
+		g.set_name("game_over")
+		get_node("Players").add_child(g)
+		return
+	get_node("Timer_Change_Stage").start()

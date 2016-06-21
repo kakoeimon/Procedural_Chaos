@@ -4,6 +4,7 @@ extends RigidBody2D
 # member variables here, example:
 # var a=2
 # var b="textvar"
+onready var stage = get_node("../../.")
 onready var anim = get_node("AnimationPlayer")
 var target
 var type = "berserker"
@@ -15,12 +16,13 @@ func _ready():
 	# Initialization here
 	connect("body_enter", self, "_body_enter")
 	add_to_group("enemies")
+	stage.get_node("Enemy_SamplePlayer").play("berserker")
 	set_fixed_process(true)
 	_fire()
 	pass
 
 func _fixed_process(delta):
-	target = get_tree().get_current_scene().player
+	target = get_node("../../Players/player")
 	var dir = (target.get_pos() - get_pos()).normalized() * acc * delta
 	var vel = get_linear_velocity() + dir
 	set_linear_velocity(vel)
@@ -48,7 +50,7 @@ func damage(value):
 	anim.play("damage")
 	
 func _fire():
-	target = get_tree().get_current_scene().player
+	target = get_node("../../Players/player")
 	var b = preload("res://instances/enemy_bullet.scn").instance()
 	var v = (target.get_pos() - get_pos()).normalized() * 300
 	b.set_pos(get_pos())

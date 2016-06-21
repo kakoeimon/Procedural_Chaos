@@ -5,6 +5,7 @@ onready var timer = get_node("Timer")
 var deaths = 0
 var player
 var controls
+var game_type = ""
 
 
 func _ready():
@@ -24,69 +25,6 @@ func _ready():
 func _process(delta):
 	get_node("fps/Label").set_text(str(OS.get_frames_per_second()))
 	
-	
-func _clear_stage():
-	for i in get_node("Stage/Enemies").get_children():
-		i.queue_free()
-	for i in get_node("Stage/Players").get_children():
-		i.queue_free()
-			
-func _player_died():
-	deaths +=1
-	get_node("deaths/Number").set_text(str(deaths))
-	player.set_fixed_process(false)
-	player.type = "none"
-	player.health = 1000
-	player.set_material(get_node("Stage/Enemies").get_material())
-	player.set_use_parent_material(false)
-	player.anim.play("Dead")
-	player.get_node("Particles2D").set_use_parent_material(true)
-	player.set_gravity_scale(5)
-	player.set_bounce(0.5)
-	player.disconnect("body_exit", player, "_body_exit")
-	player.disconnect("body_enter", player, "_body_enter")
-	
-	
-	get_node("Change_Stage_Timer").start()
-	
-		
-func _enemy_died():
-	print(get_node("Stage/Enemies").get_child_count())
-	if get_node("Stage/Enemies").get_child_count() <= 2: #No ENEMIES
-		stage.number +=1
-		get_node("Change_Stage_Timer").start()
-		player.remove_shape(0)
-		player.disconnect("body_enter", player, "_body_enter")
-		player.disconnect("body_exit", player, "_body_exit")
-		var particles = player.get_node("Particles2D")
-		particles.set_use_parent_material(true)
-		player.anim.play("Win")
-		
-		for i in get_node("Stage/Players").get_children():
-			if i.get_instance_ID() != player.get_instance_ID() and not i.is_type("Polygon2D"):
-				i.set_gravity_scale(5)
-				i.set_bounce(0.5)
-		var edges = get_node("Stage/Enemies/Polygon2D")
-		get_node("Stage/Enemies").remove_child(edges)
-		get_node("Stage/Players").add_child(edges)
-	pass
-	
-func _player_stage_vars():
-	if not has_node("Stage/Players/player"):
-		
-		player = preload("res://instances/player.scn").instance()
-		player.set_pos(Vector2(320, 240))
-		get_node("Stage/Players").add_child(player)
-		player.set_name("player")
-		
-		player.connect("player_died",self, "_player_died")
-		call_deferred("_player_stage_vars")
-		
-	player._reset_fire_rate()
-	player._advance_fire_rate(0.1 * stage.number)
-	#player.max_vel = 200 + 5*stage.number
-	player.acc = 2000 + 100*stage.number
-	player.bullet_speed = 400 + 5*stage.number
 
 func _on_Timer_timeout():
 	var eggs = get_tree().get_nodes_in_group("eggs")
@@ -95,37 +33,28 @@ func _on_Timer_timeout():
 
 func _start_stage(number):
 	get_node("Stage_Selector").hide()
-	call_deferred("_player_stage_vars")
-	stage._start_stage(number)
+	_on_Start_Button_pressed()
+	stage.number = number
+	game_type = "free"
 	#timer.set_wait_time(timer.get_wait_time() + stage.number)
-	get_node("Stage_Number/Number").set_text(str(stage.number))
-	get_node("deaths/Number").set_text(str(deaths))
-
+	
 
 func _on_Start_Button_pressed():
 	get_node("Menu").hide()
+	game_type = "arcade"
 	#get_node("Stage_Selector").show()
-	deaths = 0
+	stage.deaths = 0
 	stage.number = 1
+	get_node("Stage/Enemies/Label").set_text(str(0))
+	get_node("Stage/Players/Label").set_text(str(0))
 	for i in get_tree().get_nodes_in_group("eggs"):
 		i.set_gravity_scale(5)
-	get_node("Change_Stage_Timer").start()
 	controls.show()
+	stage.get_node("Timer_Change_Stage").start()
+	get_node("Stage/Enemy_SamplePlayer").play("start")
 	pass # replace with function body
 	
-func _notification(what):
-	if (what == MainLoop.NOTIFICATION_WM_QUIT_REQUEST):
-		if not get_node("Menu").is_hidden():
-			get_tree().quit()
-		else:
-			if get_node("Pause_Menu").is_hidden():
-				get_node("Pause_Menu").show()
-				controls.hide()
-				get_tree().set_pause(true)
-			else:
-				get_node("Pause_Menu").hide()
-				controls.show()
-				get_tree().set_pause(false)
+
 
 func _on_Resume_Button_pressed():
 	get_node("Pause_Menu").hide()
@@ -137,9 +66,9 @@ func _on_Resume_Button_pressed():
 func _on_Exit_Menu_pressed():
 	get_tree().set_pause(false)
 	get_node("Pause_Menu").hide()
-	_clear_stage()
+	stage._clear_stage()
 	get_node("Menu").show()
-	get_node("Change_Stage_Timer").stop()
+	get_node("Stage/Timer_Change_Stage").stop()
 	_demo()
 	
 	pass # replace with function body
@@ -151,9 +80,34 @@ func _on_Exit_Button_pressed():
 
 func _demo():
 	stage._start_stage(int(rand_range(15,30)))
+	#stage.get_node("Timer_Stop_Editing").stop()
 	
 
-func _on_Change_Stage_Timer_timeout():
-	_clear_stage()
-	call_deferred("_start_stage",stage.number)
+func _on_Free_Play_Button_pressed():
+	get_node("Menu").hide()
+	get_node("Stage_Selector").show()
 	pass # replace with function body
+
+func _notification(what):
+	if (what == MainLoop.NOTIFICATION_WM_QUIT_REQUEST):
+		if not get_node("Menu").is_hidden():
+			get_tree().quit()
+		else:
+			if not get_node("Stage_Selector").is_hidden():
+				get_node("Stage_Selector").hide()
+				get_node("Menu").show()
+				return
+			if has_node("Stage/Players/game_over"):
+				get_node("Stage/Players/game_over").queue_free()
+				controls.hide()
+				_on_Exit_Menu_pressed()
+				return
+				
+			if get_node("Pause_Menu").is_hidden():
+				get_node("Pause_Menu").show()
+				controls.hide()
+				get_tree().set_pause(true)
+			else:
+				get_node("Pause_Menu").hide()
+				controls.show()
+				get_tree().set_pause(false)

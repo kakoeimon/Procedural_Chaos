@@ -4,6 +4,7 @@ extends RigidBody2D
 # member variables here, example:
 # var a=2
 # var b="textvar"
+onready var stage = get_node("../../.")
 var speed = 100
 var type = "bonus_spore"
 
@@ -12,6 +13,7 @@ func _ready():
 	# Initialization here
 	connect("body_enter", self, "_body_enter")
 	var vel = Vector2(1,0).rotated(rand_range(-PI, PI)) * speed
+	stage.get_node("Enemy_SamplePlayer").play("spore_pick")
 	set_linear_velocity(vel)
 	pass
 
