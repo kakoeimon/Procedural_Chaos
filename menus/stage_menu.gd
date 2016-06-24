@@ -12,8 +12,10 @@ func _ready():
 	var button = preload("res://menus/stage_button.scn")
 	for i in range(1,31):
 		var b = button.instance()
+		
 		b.set_text(str(i))
+		b.set_name(str(i))
+		b.set_flat(true)
 		grid.add_child(b)
 	pass
-
-
+	

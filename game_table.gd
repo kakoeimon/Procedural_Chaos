@@ -27,7 +27,8 @@ func _ready():
 	else:
 		controls = preload("controls/mouse_controls.scn").instance()
 	add_child(controls)
-	set_process_input(true)
+	get_node("Menu/Start_Button").grab_focus()
+	#set_process_input(true)
 	#set_process(true)
 		
 func _process(delta):
@@ -74,6 +75,7 @@ func _on_Exit_Menu_pressed():
 	get_node("Pause_Menu").hide()
 	stage._clear_stage()
 	get_node("Menu").show()
+	get_node("Menu/Start_Button").grab_focus()
 	get_node("Stage/Timer_Change_Stage").stop()
 	_demo()
 	
@@ -92,6 +94,7 @@ func _demo():
 func _on_Free_Play_Button_pressed():
 	get_node("Menu").hide()
 	get_node("Stage_Selector").show()
+	get_node("Stage_Selector/GridContainer/1").grab_focus()
 	pass # replace with function body
 
 func _notification(what):
@@ -102,6 +105,7 @@ func _notification(what):
 			if not get_node("Stage_Selector").is_hidden():
 				get_node("Stage_Selector").hide()
 				get_node("Menu").show()
+				get_node("Menu/Free_Play_Button").grab_focus()
 				return
 			if has_node("Stage/Players/game_over"):
 				get_node("Stage/Players/game_over").queue_free()
@@ -110,6 +114,7 @@ func _notification(what):
 				
 			if get_node("Pause_Menu").is_hidden():
 				get_node("Pause_Menu").show()
+				get_node("Pause_Menu/Resume_Button").grab_focus()
 				get_tree().set_pause(true)
 			else:
 				get_node("Pause_Menu").hide()

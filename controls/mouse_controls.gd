@@ -20,7 +20,7 @@ func _ready():
 
 func _input(e):
 	var players = get_tree().get_nodes_in_group("players")
-	if e.is_action("exit"):
+	if e.is_action("ui_cancel"):
 		if e.is_pressed() and not e.is_echo():
 			get_parent().notification(MainLoop.NOTIFICATION_WM_QUIT_REQUEST)
 			return
