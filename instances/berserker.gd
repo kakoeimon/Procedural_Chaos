@@ -5,6 +5,7 @@ extends RigidBody2D
 # var a=2
 # var b="textvar"
 onready var stage = get_node("../../.")
+onready var game_table = get_tree().get_current_scene()
 onready var anim = get_node("AnimationPlayer")
 var target
 var type = "berserker"
@@ -22,10 +23,11 @@ func _ready():
 	pass
 
 func _fixed_process(delta):
-	target = get_node("../../Players/player")
-	var dir = (target.get_pos() - get_pos()).normalized() * acc * delta
-	var vel = get_linear_velocity() + dir
-	set_linear_velocity(vel)
+	if has_node("../../Players/player"):
+		target = get_node("../../Players/player")
+		var dir = (target.get_pos() - get_pos()).normalized() * acc * delta
+		var vel = get_linear_velocity() + dir
+		set_linear_velocity(vel)
 	
 func _body_enter(body):
 	if body.type == "player":
@@ -43,7 +45,7 @@ func damage(value):
 	health -=value
 	if health <=0:
 		for i in range(0,1):
-			var egg = preload("res://instances/spore.scn").instance()
+			var egg = game_table.spore.instance()
 			egg.set_pos(get_pos())
 			get_parent().add_child(egg)
 		queue_free()
@@ -51,7 +53,7 @@ func damage(value):
 	
 func _fire():
 	target = get_node("../../Players/player")
-	var b = preload("res://instances/enemy_bullet.scn").instance()
+	var b = game_table.enemy_bullet.instance()
 	var v = (target.get_pos() - get_pos()).normalized() * 300
 	b.set_pos(get_pos())
 	
@@ -60,7 +62,7 @@ func _fire():
 	get_parent().add_child(b)
 	
 func copter():
-	var egg = preload("res://instances/copter.scn").instance()
+	var egg = game_table.copter.instance()
 	egg.set_pos(get_pos())
 	egg.set_linear_velocity(get_linear_velocity())
 	get_parent().add_child(egg)

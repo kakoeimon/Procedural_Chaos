@@ -8,6 +8,7 @@ signal player_died
 signal health_changed
 onready var anim = get_node("AnimationPlayer")
 onready var stage = get_node("../../.")
+onready var game_table = get_tree().get_current_scene()
 var type = "player"
 var acc = 2000
 var max_vel = 200
@@ -70,7 +71,7 @@ func _fixed_process(delta):
 		if fire_rate_timer <=0:
 			#get_node("SamplePlayer2D").play("Laser_Shoot")
 			fire_rate_timer = fire_rate
-			var b = preload("bullet.scn").instance()
+			var b = game_table.bullet.instance()
 			b.add_collision_exception_with(self)
 			var v = shoot_dir * bullet_speed
 			v = v.rotated(rand_range(-coil, coil))

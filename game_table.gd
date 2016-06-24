@@ -6,7 +6,15 @@ var deaths = 0
 var player
 var controls
 var game_type = ""
-
+var bullet = preload("res://instances/bullet.scn")
+var egg = preload("res://instances/egg.scn")
+var infant = preload("res://instances/infant.scn")
+var berserker = preload("res://instances/berserker.scn")
+var copter = preload("res://instances/copter.scn")
+var spore = preload("res://instances/spore.scn")
+var enemy_bullet = preload("res://instances/enemy_bullet.scn")
+var bonus_spore = preload("res://instances/bonus_spore.scn")
+var bonus_base = preload("res://instances/bonus_base.scn")
 
 func _ready():
 	get_tree().set_auto_accept_quit(false)
@@ -18,10 +26,10 @@ func _ready():
 			controls = preload("controls/mouse_controls.scn").instance()
 	else:
 		controls = preload("controls/mouse_controls.scn").instance()
-	controls.hide()
 	add_child(controls)
+	set_process_input(true)
 	#set_process(true)
-	
+		
 func _process(delta):
 	get_node("fps/Label").set_text(str(OS.get_frames_per_second()))
 	
@@ -49,7 +57,6 @@ func _on_Start_Button_pressed():
 	get_node("Stage/Players/Label").set_text(str(0))
 	for i in get_tree().get_nodes_in_group("eggs"):
 		i.set_gravity_scale(5)
-	controls.show()
 	stage.get_node("Timer_Change_Stage").start()
 	get_node("Stage/Enemy_SamplePlayer").play("start")
 	pass # replace with function body
@@ -58,7 +65,6 @@ func _on_Start_Button_pressed():
 
 func _on_Resume_Button_pressed():
 	get_node("Pause_Menu").hide()
-	controls.show()
 	get_tree().set_pause(false)
 	pass # replace with function body
 
@@ -99,15 +105,12 @@ func _notification(what):
 				return
 			if has_node("Stage/Players/game_over"):
 				get_node("Stage/Players/game_over").queue_free()
-				controls.hide()
 				_on_Exit_Menu_pressed()
 				return
 				
 			if get_node("Pause_Menu").is_hidden():
 				get_node("Pause_Menu").show()
-				controls.hide()
 				get_tree().set_pause(true)
 			else:
 				get_node("Pause_Menu").hide()
-				controls.show()
 				get_tree().set_pause(false)

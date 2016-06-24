@@ -5,6 +5,7 @@ extends RigidBody2D
 # var a=2
 # var b="textvar"
 onready var stage = get_node("../../.")
+onready var game_table = get_tree().get_current_scene()
 var speed = 100
 var type = "bonus_base"
 var power = 3
@@ -19,7 +20,7 @@ func _ready():
 
 func _body_enter(body):
 	if body.type == "bonus_spore":
-		var egg = preload("res://instances/bonus_base.scn").instance()
+		var egg = game_table.bonus_base.instance()
 		egg.set_pos(get_pos())
 		get_parent().add_child(egg)
 		queue_free()
@@ -29,8 +30,7 @@ func _body_enter(body):
 		queue_free()
 
 func _shoot():
-	var b = preload("bullet.scn")
-	var n = b.instance()
+	var n = game_table.bullet.instance()
 	n.add_collision_exception_with(self)
 	n.set_pos(get_pos())
 	n.set_linear_velocity(dir)

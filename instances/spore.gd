@@ -5,6 +5,7 @@ extends RigidBody2D
 # var a=2
 # var b="textvar"
 onready var stage = get_node("../../.")
+onready var game_table = get_tree().get_current_scene()
 var type = "spore"
 var health = 1
 var power = 1
@@ -21,7 +22,7 @@ func _ready():
 func _body_enter(body):
 	if grown:
 		if body.type == "spore" or body.type == "bonus_base":
-			var egg = preload("res://instances/egg.scn").instance()
+			var egg = game_table.egg.instance()
 			egg.set_pos(get_pos())
 			get_parent().add_child(egg)
 			queue_free()
@@ -36,7 +37,7 @@ func grow():
 	grown = true
 	
 func infant():
-	var egg = preload("res://instances/infant.scn").instance()
+	var egg = game_table.infant.instance()
 	egg.set_pos(get_pos())
 	get_parent().add_child(egg)
 	queue_free()

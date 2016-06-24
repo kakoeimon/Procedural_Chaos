@@ -5,6 +5,7 @@ extends RigidBody2D
 # var a=2
 # var b="textvar"
 onready var stage = get_node("../../.")
+onready var game_table = get_tree().get_current_scene()
 onready var anim = get_node("AnimationPlayer")
 var type = "egg"
 var health = 3
@@ -19,19 +20,20 @@ func _ready():
 	pass
 	
 func damage(value):
-	anim.play("damage")
-	health -= value
-	if health <= 0:
-		for i in range(0,2):
-			var egg = preload("res://instances/infant.scn").instance()
-			egg.set_pos(get_pos())
-			get_parent().add_child(egg)
-		stage.get_node("Enemy_SamplePlayer").play("egg_break")
-		queue_free()
+	if health > 0:
+		anim.play("damage")
+		health -= value
+		if health <= 0:
+			for i in range(0,2):
+				var egg = game_table.infant.instance()
+				egg.set_pos(get_pos())
+				get_parent().add_child(egg)
+			stage.get_node("Enemy_SamplePlayer").play("egg_break")
+			queue_free()
 		
 
 func replicate():
-	var egg = preload("res://instances/egg.scn").instance()
+	var egg = game_table.egg.instance()
 	egg.set_pos(get_pos() + Vector2(rand_range(0,1), rand_range(0,1)))
 	get_parent().add_child(egg)
 

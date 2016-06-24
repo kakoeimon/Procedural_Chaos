@@ -6,6 +6,7 @@ extends RigidBody2D
 # var b="textvar"
 signal enemy_died
 onready var stage = get_node("../../.")
+onready var game_table = get_tree().get_current_scene()
 var type = "copter"
 var speed = 300
 var health = 2
@@ -32,9 +33,10 @@ func _body_exit(body):
 	pass
 
 func damage(value):
-	health -= value
-	if health <= 0:
-		dead()
+	if health > 0:
+		health -= value
+		if health <= 0:
+			dead()
 		
 
 func _on_Timer_timeout():
@@ -43,7 +45,7 @@ func _on_Timer_timeout():
 
 func dead():
 	for i in range(0,2):
-		var egg = preload("res://instances/spore.scn").instance()
+		var egg = game_table.spore.instance()
 		egg.set_pos(get_pos())
 		get_parent().add_child(egg)
 	queue_free()

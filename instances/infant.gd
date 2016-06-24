@@ -5,6 +5,7 @@ extends RigidBody2D
 # var a=2
 # var b="textvar"
 onready var stage = get_node("../../.")
+onready var game_table = get_tree().get_current_scene()
 var type = "infant"
 var health = 1
 var speed = 200
@@ -23,7 +24,7 @@ func _ready():
 func damage(value):
 	health -= value
 	if health <= 0:
-		var egg = preload("res://instances/spore.scn").instance()
+		var egg = game_table.spore.instance()
 		egg.set_pos(get_pos())
 		get_parent().add_child(egg)
 		queue_free()
@@ -39,7 +40,7 @@ func _enter_body(body):
 			
 	
 func berserker():
-	var egg = preload("res://instances/berserker.scn").instance()
+	var egg = game_table.berserker.instance()
 	egg.set_pos(get_pos())
 	egg.set_rot(get_rot())
 	egg.set_linear_velocity(get_linear_velocity())

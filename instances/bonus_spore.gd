@@ -5,6 +5,7 @@ extends RigidBody2D
 # var a=2
 # var b="textvar"
 onready var stage = get_node("../../.")
+onready var game_table = get_tree().get_current_scene()
 var speed = 100
 var type = "bonus_spore"
 
@@ -30,7 +31,7 @@ func damage(value):
 	pass
 	
 func bonus_base():
-	var egg = preload("res://instances/bonus_base.scn").instance()
+	var egg = game_table.bonus_base.instance()
 	egg.set_pos(get_pos())
 	get_parent().add_child(egg)
 	queue_free()
