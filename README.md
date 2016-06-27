@@ -34,4 +34,4 @@ Mouse to point and shoot.
 
 Joystick Support, left stick for movement and right stick for shooting
 
-Touch Joystick for Android.
+Touch Joystick for Android by using code from Jakub Grzesik www.kivano.net
